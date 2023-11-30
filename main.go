@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"2/controller"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -13,14 +13,10 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover()) // Panicが発生してもリカバーしてくれる
 
-	e.GET("/tasks", func(c echo.Context) error {
-		fmt.Println("get all tasks")
-		return c.String(200, "get all tasks")
-	})
-	e.POST("/tasks", func(c echo.Context) error {
-		fmt.Println("create tasks")
-		return c.String(200, "create task")
-	})
+	taskController := controller.TaskController{}
+
+	e.GET("/tasks", taskController.Get)
+	e.POST("/tasks", taskController.Create)
 
 	e.Start(":8080")
 }
