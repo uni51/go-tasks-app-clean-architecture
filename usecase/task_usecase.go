@@ -1,13 +1,14 @@
 package usecase
 
 import (
+	"2/model"
 	"2/repository"
 	"fmt"
 )
 
 type TaskUsecase interface {
 	CreateTask(title string) error
-	GetTask(id int) (*repository.Task, error)
+	GetTask(id int) (*model.Task, error)
 	UpdateTask(id int, title, description string) error
 	DeleteTask(id int) error
 }
@@ -21,13 +22,18 @@ func NewTaskUsecase(r repository.TaskRepository) TaskUsecase {
 }
 
 func (u *taskUsecase) CreateTask(title string) error {
-	task := repository.Task{Title: title}
+	task := model.Task{Title: title}
+	err := task.Validate()
+	if err != nil {
+		return err
+	}
+
 	id, err := u.r.Create(&task)
 	fmt.Println(id)
 	return err
 }
 
-func (u *taskUsecase) GetTask(id int) (*repository.Task, error) {
+func (u *taskUsecase) GetTask(id int) (*model.Task, error) {
 	t, err := u.r.Read(id)
 	if err != nil {
 		return nil, err
@@ -37,7 +43,7 @@ func (u *taskUsecase) GetTask(id int) (*repository.Task, error) {
 }
 
 func (u *taskUsecase) UpdateTask(id int, title, description string) error {
-	task := repository.Task{ID: id, Title: title}
+	task := model.Task{ID: id, Title: title}
 	err := u.r.Update(&task)
 	return err
 }
